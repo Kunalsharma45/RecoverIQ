@@ -1,0 +1,23 @@
+@import 'tailwindcss';
+
+:root{
+	--primaryGreen: #256B52;
+	--darkGreen: #1F5A45;
+	--cream: #F5F1E8;
+	--softLime: #DDE8CF;
+	--lavender: #D8D2F0;
+	--mutedWhite: #FAF9F7;
+	--textDark: #234032;
+	--textSoft: #5C6B63;
+	--borderSoft: #D9E1D7;
+}
+
+html, body, #root { height: 100%; }
+
+body {
+	font-family: Inter, system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;
+	background: var(--mutedWhite);
+	color: var(--textDark);
+}
+
+.serif-heading { font-family: 'Cormorant Garamond', serif; }

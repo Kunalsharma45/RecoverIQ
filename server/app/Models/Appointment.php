@@ -1,0 +1,38 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
+class Appointment extends Model
+{
+    protected $fillable = [
+        'patient_id',
+        'doctor_id',
+        'booked_by_name',
+        'booked_by_email',
+        'slot_at',
+        'status',
+        'notes',
+    ];
+
+    protected $casts = [
+        'slot_at' => 'datetime',
+    ];
+
+    public function patient(): BelongsTo
+    {
+        return $this->belongsTo(Patient::class);
+    }
+
+    public function doctor(): BelongsTo
+    {
+        return $this->belongsTo(Doctor::class);
+    }
+
+    public function review(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(DoctorReview::class);
+    }
+}
