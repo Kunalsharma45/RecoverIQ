@@ -30,10 +30,10 @@ export default function RoutesIndex() {
     <Routes>
       <Route element={<PublicLayout />}>
         <Route path="/" element={<Landing />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register-doctor" element={<RegisterDoctor />} />
         <Route path="/book" element={<Book />} />
       </Route>
+      <Route path="/login" element={<Login />} />
+      <Route path="/register-doctor" element={<RegisterDoctor />} />
 
       <Route
         path="/doctor"
