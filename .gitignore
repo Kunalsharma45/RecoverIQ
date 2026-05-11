@@ -1,0 +1,69 @@
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDEs and Editors
+.idea/
+.vscode/
+*.sublime-workspace
+*.swp
+*.swo
+
+# Global Environment Variables
+.env
+.env.local
+.env.*.local
+.env.backup
+.env.example
+
+# Common Node/NPM
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ----------------------------
+# Client specific (Vite/React)
+# ----------------------------
+client/node_modules/
+client/dist/
+client/dist-ssr/
+client/.vite/
+client/coverage/
+client/*.local
+
+# ----------------------------
+# Server specific (Laravel)
+# ----------------------------
+server/vendor/
+server/node_modules/
+server/public/build/
+server/public/hot
+server/public/storage
+server/storage/*.key
+server/storage/framework/cache/*
+server/storage/framework/sessions/*
+server/storage/framework/testing/*
+server/storage/framework/views/*
+server/storage/logs/*
+server/bootstrap/cache/*
+server/.phpunit.result.cache
+server/Homestead.json
+server/Homestead.yaml
+server/.env
+server/.env.backup
+server/phpunit.xml
+
+# Important: do not ignore the .gitignore files inside server directories
+!server/storage/framework/cache/.gitignore
+!server/storage/framework/sessions/.gitignore
+!server/storage/framework/testing/.gitignore
+!server/storage/framework/views/.gitignore
+!server/storage/logs/.gitignore
+!server/bootstrap/cache/.gitignore

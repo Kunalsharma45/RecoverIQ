@@ -1,119 +1,60 @@
 import React from 'react'
-import { motion } from 'motion/react'
-import Button from '../../components/ui/Button.jsx'
-
-const imageA = 'https://images.unsplash.com/photo-1576765608866-5b51046452be?q=80&w=1600&auto=format&fit=crop&ixlib=rb-4.0.3'
-const imageB = 'https://images.unsplash.com/photo-1580281658629-4db8e8b93092?q=80&w=1400&auto=format&fit=crop&ixlib=rb-4.0.3'
-const imageC = 'https://images.unsplash.com/photo-1505751172876-fa1923c5c528?q=80&w=1400&auto=format&fit=crop&ixlib=rb-4.0.3'
+import Navbar from '../../components/layout/Navbar.jsx'
+import HeroSection from '../../components/landing/HeroSection.jsx'
+import ServicesSection from '../../components/landing/ServicesSection.jsx'
+import ProgramsSection from '../../components/landing/ProgramsSection.jsx'
+import DoctorsSection from '../../components/landing/DoctorsSection.jsx'
+import TestimonialsSection from '../../components/landing/TestimonialsSection.jsx'
 
 export default function Landing() {
   return (
-    <main className="pt-36">
-      <section className="bg-[var(--darkGreen)] text-[var(--cream)]">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8 py-28">
-          <div className="grid grid-cols-1 lg:grid-cols-[1.05fr_0.95fr] gap-16 items-center">
-            <div className="space-y-8">
-              <motion.h1
-                className="serif-heading text-6xl md:text-7xl lg:text-8xl leading-[0.9] tracking-tight"
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8 }}
-                viewport={{ once: true }}
-              >
-                Recover Better. Track Every Step.
-              </motion.h1>
-              <motion.p
-                className="text-lg leading-relaxed text-[var(--cream)]/90 max-w-xl"
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.1 }}
-                viewport={{ once: true }}
-              >
-                RecoverIQ helps patients monitor rehabilitation progress while staying connected with compassionate rehabilitation experts.
-              </motion.p>
-              <div className="flex flex-wrap gap-4">
-                <Button onClick={() => window.location.href = '/book'}>Book Session</Button>
-                <Button variant="secondary" onClick={() => document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' })}>Learn More</Button>
-              </div>
+    <div className="min-h-screen bg-[var(--mutedWhite)] relative overflow-hidden font-sans">
+      {/* Global Background Texture/Grain */}
+      <div className="fixed inset-0 pointer-events-none opacity-[0.03] z-50 mix-blend-overlay" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}></div>
+      
+      {/* Global abstract blobs */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
+        <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-[var(--softLime)]/20 blur-[150px] rounded-full mix-blend-multiply opacity-60" />
+        <div className="absolute bottom-0 left-0 w-[800px] h-[800px] bg-[var(--primaryGreen)]/10 blur-[150px] rounded-full mix-blend-multiply opacity-60" />
+      </div>
 
-              <div className="flex items-center gap-4 text-sm text-[var(--cream)]/80">
-                <span>Doctor?</span>
-                <a className="underline underline-offset-4" href="/register-doctor">Sign up</a>
-                <span>or</span>
-                <a className="underline underline-offset-4" href="/login">Login</a>
-              </div>
+      <Navbar />
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-6">
-                {[
-                  'Personalized rehab plans',
-                  'Expert-reviewed milestones',
-                  'Gentle, guided progress'
-                ].map(label => (
-                  <div key={label} className="rounded-[32px] bg-white/10 border border-white/20 px-4 py-3 text-sm">
-                    {label}
-                  </div>
-                ))}
+      <main className="relative z-10 flex flex-col">
+        <HeroSection />
+        <ServicesSection />
+        <ProgramsSection />
+        <DoctorsSection />
+        <TestimonialsSection />
+      </main>
+
+      {/* Footer */}
+      <footer className="bg-[#0A0A0A] text-white py-16 relative z-10 border-t border-white/5">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-8 border-b border-white/10 pb-12 mb-8">
+            <div className="flex flex-col gap-2">
+              <div className="text-3xl font-bold tracking-tighter serif-heading">
+                Recover<span className="text-[var(--primaryGreen)]">IQ</span>
               </div>
+              <p className="text-white/40 text-sm max-w-sm">Elevating the standard of recovery through intelligent milestones and compassionate oversight.</p>
             </div>
-
-            <div className="relative">
-              <motion.div
-                className="absolute -top-8 -left-6 w-44 rounded-[32px] bg-[var(--cream)] text-[var(--textDark)] p-4 border border-[var(--borderSoft)] shadow-lg"
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.9, delay: 0.2 }}
-                viewport={{ once: true }}
-              >
-                <div className="text-xs text-[var(--textSoft)]">Recovery Progress</div>
-                <div className="font-semibold">Day 7 • Mobility Improving</div>
-              </motion.div>
-
-              <motion.div
-                className="absolute -bottom-8 left-10 w-48 rounded-[32px] bg-[var(--cream)] text-[var(--textDark)] p-4 border border-[var(--borderSoft)] shadow-lg"
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.9, delay: 0.3 }}
-                viewport={{ once: true }}
-              >
-                <div className="text-xs text-[var(--textSoft)]">30 Day Recovery Program</div>
-                <div className="font-semibold">68% Completed</div>
-              </motion.div>
-
-              <motion.div
-                className="absolute top-16 right-0 w-44 rounded-[32px] bg-[var(--cream)] text-[var(--textDark)] p-4 border border-[var(--borderSoft)] shadow-lg"
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.9, delay: 0.25 }}
-                viewport={{ once: true }}
-              >
-                <div className="text-xs text-[var(--textSoft)]">Dr. Sarah Lee</div>
-                <div className="font-semibold">Weekly Review Completed</div>
-              </motion.div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="rounded-[40px] overflow-hidden shadow-xl">
-                  <img src={imageA} alt="physiotherapy session" className="w-full h-64 object-cover" />
-                </div>
-                <div className="rounded-[40px] overflow-hidden shadow-xl mt-10">
-                  <img src={imageB} alt="rehabilitation therapy" className="w-full h-64 object-cover" />
-                </div>
-                <div className="rounded-[40px] overflow-hidden shadow-xl col-span-2">
-                  <img src={imageC} alt="recovery consultation" className="w-full h-60 object-cover" />
-                </div>
-              </div>
+            <div className="flex flex-wrap gap-8 text-sm font-medium text-white/60">
+              <a href="#services" className="hover:text-[var(--primaryGreen)] transition-colors">Services</a>
+              <a href="#programs" className="hover:text-[var(--primaryGreen)] transition-colors">Programs</a>
+              <a href="#doctors" className="hover:text-[var(--primaryGreen)] transition-colors">Doctors</a>
+              <a href="/login" className="hover:text-[var(--primaryGreen)] transition-colors">Login</a>
+              <a href="/register-doctor" className="hover:text-[var(--primaryGreen)] transition-colors">Join as Doctor</a>
+            </div>
+          </div>
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-white/30">
+            <p>© 2026 RecoverIQ. All rights reserved.</p>
+            <div className="flex gap-4">
+              <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
+              <a href="#" className="hover:text-white transition-colors">Terms of Service</a>
             </div>
           </div>
         </div>
-      </section>
-
-      <section id="services" className="bg-[var(--cream)] py-28">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8">
-          <div className="serif-heading text-4xl">Services Preview</div>
-          <p className="mt-4 text-lg leading-relaxed text-[var(--textSoft)] max-w-2xl">
-            Three core services built around human-first recovery and expert oversight.
-          </p>
-        </div>
-      </section>
-    </main>
+      </footer>
+    </div>
   )
 }

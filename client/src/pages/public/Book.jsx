@@ -4,8 +4,7 @@ import { motion } from 'motion/react'
 import api from '../../lib/api.js'
 import Button from '../../components/ui/Button.jsx'
 import Input from '../../components/ui/Input.jsx'
-
-const heroImage = 'https://images.unsplash.com/photo-1584515933487-779824d29309?q=80&w=1600&auto=format&fit=crop&ixlib=rb-4.0.3'
+import BookSVG from '../../assets/Physical therapy exercise-bro.svg'
 
 export default function Book() {
   const [selectedDoctor, setSelectedDoctor] = useState(null)
@@ -89,8 +88,9 @@ export default function Book() {
               Choose a doctor and request a session. Once approved, you will receive patient credentials via email.
             </p>
           </div>
-          <div className="rounded-[40px] overflow-hidden shadow-xl">
-            <img src={heroImage} alt="rehabilitation" className="w-full h-72 object-cover" />
+          <div className="relative flex items-center justify-center">
+            <div className="absolute inset-0 bg-[var(--softLime)]/20 blur-[80px] rounded-full mix-blend-multiply opacity-60 -z-10" />
+            <img src={BookSVG} alt="rehabilitation" className="w-full max-h-96 object-contain relative z-10 drop-shadow-2xl" />
           </div>
         </div>
       </section>
@@ -120,7 +120,9 @@ export default function Book() {
                   viewport={{ once: true }}
                 >
                   <div className="flex items-center gap-4">
-                    <div className="h-16 w-16 rounded-full bg-[var(--lavender)]" />
+                    <div className="h-16 w-16 rounded-full bg-[var(--primaryGreen)] flex-shrink-0 flex items-center justify-center text-white text-2xl font-serif drop-shadow-md border-2 border-[var(--softLime)]">
+                      {doctor.name ? doctor.name.charAt(0).toUpperCase() : 'D'}
+                    </div>
                     <div>
                       <div className="font-semibold text-[var(--textDark)]">{doctor.name}</div>
                       <div className="text-sm text-[var(--textSoft)]">{doctor.specialization || 'Rehab Specialist'}</div>

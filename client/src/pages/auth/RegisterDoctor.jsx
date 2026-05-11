@@ -4,9 +4,11 @@ import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
 import { motion } from 'motion/react'
+import { Award, TrendingUp } from 'lucide-react'
 import Input from '../../components/ui/Input.jsx'
 import Button from '../../components/ui/Button.jsx'
 import api from '../../lib/api.js'
+import DoctorsBro from '../../assets/Doctors-bro.svg'
 
 const schema = z.object({
   name: z.string().min(2, 'Name is required'),
@@ -19,8 +21,6 @@ const schema = z.object({
   message: 'Passwords do not match',
   path: ['confirmPassword'],
 })
-
-const image = 'https://images.unsplash.com/photo-1527613426441-4da17471b66d?q=80&w=1400&auto=format&fit=crop&ixlib=rb-4.0.3'
 
 export default function RegisterDoctor() {
   const [serverError, setServerError] = React.useState('')
@@ -71,13 +71,43 @@ export default function RegisterDoctor() {
       <div className="max-w-7xl mx-auto px-6 lg:px-8 pt-32 pb-20">
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_1fr] gap-16 items-stretch">
           <motion.div
-            className="rounded-[40px] overflow-hidden shadow-xl"
+            className="rounded-[40px] overflow-hidden shadow-xl bg-[var(--cream)] flex items-center justify-center p-12 relative"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
           >
-            <img src={image} alt="doctor wellness" className="w-full h-full object-cover" />
+            <motion.div 
+              className="absolute top-16 left-8 sm:left-12 bg-white/80 backdrop-blur-md border border-[var(--borderSoft)] rounded-2xl p-4 shadow-lg flex items-center gap-4 z-10"
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+            >
+              <div className="w-10 h-10 rounded-full bg-[var(--softLime)] flex items-center justify-center text-[var(--darkGreen)]">
+                <Award size={20} />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-[var(--textDark)]">Top Healthcare Network</p>
+                <p className="text-xs text-[var(--textSoft)]">Join 1k+ Verified Doctors</p>
+              </div>
+            </motion.div>
+
+            <motion.div 
+              className="absolute bottom-24 right-8 sm:right-12 bg-white/80 backdrop-blur-md border border-[var(--borderSoft)] rounded-2xl p-4 shadow-lg flex items-center gap-4 z-10"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.6 }}
+            >
+              <div className="w-10 h-10 rounded-full bg-[var(--darkGreen)] text-white flex items-center justify-center">
+                <TrendingUp size={20} />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-[var(--textDark)]">Track Recovery</p>
+                <p className="text-xs text-[var(--textSoft)]">Monitor patient milestones</p>
+              </div>
+            </motion.div>
+            
+            <img src={DoctorsBro} alt="Doctors illustration" className="w-full h-auto max-w-md object-contain pt-12" />
           </motion.div>
 
           <motion.div

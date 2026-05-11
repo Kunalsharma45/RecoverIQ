@@ -2,21 +2,21 @@ import React from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { Link, useNavigate } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
-import { useNavigate } from 'react-router-dom'
 import { motion } from 'motion/react'
+import { ShieldCheck, HeartPulse } from 'lucide-react'
 import Input from '../../components/ui/Input.jsx'
 import Button from '../../components/ui/Button.jsx'
 import api from '../../lib/api.js'
 import { useAuth } from '../../context/AuthContext.jsx'
+import AnxietyBro from '../../assets/Anxiety-bro.svg'
 
 const schema = z.object({
   email: z.string().email('Valid email is required'),
   password: z.string().min(8, 'Password must be at least 8 characters'),
   remember: z.boolean().optional(),
 })
-
-const image = 'https://images.unsplash.com/photo-1580281658706-8b7a3f495fe3?q=80&w=1400&auto=format&fit=crop&ixlib=rb-4.0.3'
 
 export default function Login() {
   const navigate = useNavigate()
@@ -73,13 +73,43 @@ export default function Login() {
       <div className="max-w-7xl mx-auto px-6 lg:px-8 pt-32 pb-20">
         <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] gap-16 items-stretch">
           <motion.div
-            className="rounded-[40px] overflow-hidden shadow-xl bg-[var(--cream)]"
+            className="rounded-[40px] overflow-hidden shadow-xl bg-[var(--cream)] flex items-center justify-center p-12 relative"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
           >
-            <img src={image} alt="rehabilitation care" className="w-full h-full object-cover" />
+            <motion.div 
+              className="absolute top-16 left-8 sm:left-12 bg-white/80 backdrop-blur-md border border-[var(--borderSoft)] rounded-2xl p-4 shadow-lg flex items-center gap-4 z-10"
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+            >
+              <div className="w-10 h-10 rounded-full bg-[var(--softLime)] flex items-center justify-center text-[var(--darkGreen)]">
+                <ShieldCheck size={20} />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-[var(--textDark)]">Secure Platform</p>
+                <p className="text-xs text-[var(--textSoft)]">HIPAA Compliant</p>
+              </div>
+            </motion.div>
+
+            <motion.div 
+              className="absolute bottom-24 right-8 sm:right-12 bg-white/80 backdrop-blur-md border border-[var(--borderSoft)] rounded-2xl p-4 shadow-lg flex items-center gap-4 z-10"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.6 }}
+            >
+              <div className="w-10 h-10 rounded-full bg-[var(--primaryGreen)] text-white flex items-center justify-center">
+                <HeartPulse size={20} />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-[var(--textDark)]">Personalized Care</p>
+                <p className="text-xs text-[var(--textSoft)]">Your recovery, your pace</p>
+              </div>
+            </motion.div>
+
+            <img src={AnxietyBro} alt="Anxiety support illustration" className="w-full h-auto max-w-md object-contain pt-12" />
           </motion.div>
 
           <motion.div
