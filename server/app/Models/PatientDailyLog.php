@@ -5,21 +5,19 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class PatientProgress extends Model
+class PatientDailyLog extends Model
 {
     protected $fillable = [
         'patient_id',
         'milestone_id',
-        'status',
-        'completed_at',
-        'reviewed_at',
-        'notes',
-        'doctor_notes'
-    ];
-
-    protected $casts = [
-        'completed_at' => 'datetime',
-        'reviewed_at' => 'datetime',
+        'progress_id',
+        'pain_level',
+        'energy_level',
+        'mobility_score',
+        'exercise_completion',
+        'mood',
+        'difficulties',
+        'improvements'
     ];
 
     public function patient(): BelongsTo
@@ -32,8 +30,8 @@ class PatientProgress extends Model
         return $this->belongsTo(ProgramMilestone::class, 'milestone_id');
     }
 
-    public function dailyLog(): \Illuminate\Database\Eloquent\Relations\HasOne
+    public function progress(): BelongsTo
     {
-        return $this->hasOne(PatientDailyLog::class, 'progress_id');
+        return $this->belongsTo(PatientProgress::class, 'progress_id');
     }
 }

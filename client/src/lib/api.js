@@ -23,4 +23,29 @@ api.interceptors.response.use(
   }
 )
 
+export const patientApi = {
+  getDashboard: () => api.get('/patient/dashboard'),
+  getRecoveryProgram: () => api.get('/patient/recovery-program'),
+  getAnalytics: () => api.get('/patient/analytics'),
+  getMilestones: () => api.get('/patient/milestones'),
+  completeMilestone: (id, data) => api.post(`/patient/milestones/${id}/check-in`, data),
+  updateProgress: (data) => api.post('/patient/progress', data),
+  getAppointments: () => api.get('/patient/appointments'),
+  bookAppointment: (data) => api.post('/patient/appointments', data),
+  getNotifications: () => api.get('/patient/notifications'),
+  markNotificationRead: (id) => api.patch(`/patient/notifications/${id}/read`),
+}
+
+export const doctorApi = {
+  getDashboard: () => api.get('/doctor/patients'), // assuming dashboard uses patient list for now
+  getPatients: () => api.get('/doctor/patients'),
+  getMilestones: (params) => api.get('/doctor/milestones', { params }),
+  createMilestone: (programId, data) => api.post(`/doctor/programs/${programId}/milestones`, data),
+  updateMilestone: (id, data) => api.patch(`/doctor/milestones/${id}`, data),
+  deleteMilestone: (id) => api.delete(`/doctor/milestones/${id}`),
+  reviewMilestone: (progressId, data) => api.patch(`/doctor/milestones/review/${progressId}`, data),
+  getPrograms: () => api.get('/doctor/programs'),
+  getAppointments: () => api.get('/doctor/appointments'),
+}
+
 export default api

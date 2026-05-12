@@ -34,6 +34,45 @@ class Patient extends Model
         return $this->hasMany(PatientProgress::class);
     }
 
+    public function calculateStreak()
+    {
+        $completionDates = $this->progress()
+            ->where('status', 'Completed')
+            ->whereNotNull('completed_at')
+            ->orderBy('completed_at', 'desc')
+            ->get()
+            ->map(function($p) {
+                return $p->completed_at->toDateString();
+            })
+            ->unique()
+            ->values();
+
+        if ($completionDates->isEmpty()) return 0;
+
+        $streak = 0;
+        $checkDate = \Carbon\Carbon::today();
+
+        // If today isn't completed, check if yesterday was. 
+        // If neither, streak is 0.
+        if ($completionDates[0] !== $checkDate->toDateString()) {
+            $checkDate->subDay();
+            if ($completionDates[0] !== $checkDate->toDateString()) {
+                return 0;
+            }
+        }
+
+        foreach ($completionDates as $date) {
+            if ($date === $checkDate->toDateString()) {
+                $streak++;
+                $checkDate->subDay();
+            } else {
+                break;
+            }
+        }
+
+        return $streak;
+    }
+
     public function appointments(): HasMany
     {
         return $this->hasMany(Appointment::class);

@@ -13,8 +13,11 @@ import PatientLayout from '../layouts/PatientLayout.jsx'
 import PatientDashboard from '../pages/patient/Dashboard.jsx'
 import PatientMilestones from '../pages/patient/Milestones.jsx'
 import PatientAppointments from '../pages/patient/Appointments.jsx'
-import PatientReviews from '../pages/patient/Reviews.jsx'
 import PatientSettings from '../pages/patient/Settings.jsx'
+
+import DoctorMilestones from '../pages/doctor/Milestones.jsx'
+import PatientRecoveryProgram from '../pages/patient/RecoveryProgram.jsx'
+import PatientTimeline from '../pages/patient/Timeline.jsx'
 
 const Placeholder = ({ title }) => (
   <div className="pt-36">
@@ -43,7 +46,7 @@ export default function RoutesIndex() {
         <Route path="appointments" element={<DoctorAppointments />} />
         <Route path="patients" element={<Placeholder title="Patients" />} />
         <Route path="programs" element={<Placeholder title="Programs" />} />
-        <Route path="milestones" element={<Placeholder title="Milestones" />} />
+        <Route path="milestones" element={<DoctorMilestones />} />
         <Route path="reviews" element={<Placeholder title="Reviews & Notes" />} />
         <Route path="analytics" element={<Placeholder title="Analytics" />} />
         <Route path="profile" element={<Placeholder title="Profile" />} />
@@ -56,9 +59,8 @@ export default function RoutesIndex() {
         <Route index element={<PatientDashboard />} />
         <Route path="milestones" element={<PatientMilestones />} />
         <Route path="appointments" element={<PatientAppointments />} />
-        <Route path="reviews" element={<PatientReviews />} />
-        <Route path="program" element={<Placeholder title="Recovery Program" />} />
-        <Route path="timeline" element={<Placeholder title="Progress Timeline" />} />
+        <Route path="program" element={<PatientRecoveryProgram />} />
+        <Route path="timeline" element={<PatientTimeline />} />
         <Route path="settings" element={<PatientSettings />} />
       </Route>
       <Route

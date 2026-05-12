@@ -8,7 +8,17 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class ProgramMilestone extends Model
 {
-    protected $fillable = ['program_id', 'title', 'description', 'due_day'];
+    protected $fillable = [
+        'program_id',
+        'title',
+        'description',
+        'difficulty',
+        'duration_minutes',
+        'category',
+        'exercise_instructions',
+        'media_url',
+        'due_day'
+    ];
 
     public function program(): BelongsTo
     {

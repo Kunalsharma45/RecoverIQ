@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\Doctor\ReviewController;
 use App\Http\Controllers\Api\Doctor\MilestoneController;
 use App\Http\Controllers\Api\Patient\DashboardController;
 use App\Http\Controllers\Api\Patient\ProgressController;
+use App\Http\Controllers\Api\Patient\AnalyticsController;
 use App\Http\Controllers\Api\Patient\AppointmentController as PatientAppointmentController;
 use App\Http\Controllers\Api\Public\DoctorController as PublicDoctorController;
 use App\Http\Controllers\Api\Public\AppointmentController as PublicAppointmentController;
@@ -89,10 +90,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/reviews/{patientId}', [ReviewController::class, 'show']);
 
         // Programs & Milestones
-        Route::get('/programs', [MilestoneController::class, 'programs']);
+        Route::get('/milestones', [MilestoneController::class, 'index']);
         Route::post('/programs/{id}/milestones', [MilestoneController::class, 'store']);
         Route::patch('/milestones/{id}', [MilestoneController::class, 'update']);
         Route::delete('/milestones/{id}', [MilestoneController::class, 'destroy']);
+        Route::patch('/milestones/review/{progressId}', [MilestoneController::class, 'review']);
+        
+        // For dropdowns/filters
+        Route::get('/programs', [AdminProgramController::class, 'index']);
     });
 
     /*
@@ -103,8 +108,13 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index']);
         Route::get('/feedback', [DashboardController::class, 'feedback']);
 
+        // Recovery Program
+        Route::get('/recovery-program', [App\Http\Controllers\Api\Patient\RecoveryProgramController::class, 'index']);
+        Route::get('/analytics', [AnalyticsController::class, 'index']);
+
         // Milestones & Progress
         Route::get('/milestones', [ProgressController::class, 'milestones']);
+        Route::post('/milestones/{id}/check-in', [ProgressController::class, 'checkIn']);
         Route::post('/progress', [ProgressController::class, 'store']);
         Route::get('/progress', [ProgressController::class, 'index']);
 

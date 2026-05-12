@@ -19,7 +19,7 @@ export default function PatientDashboard() {
     queryKey: ['patient-milestones'],
     queryFn: async () => {
       const res = await api.get('/patient/milestones')
-      return res.data || []
+      return res.data.milestones || []
     },
   })
 
@@ -48,7 +48,7 @@ export default function PatientDashboard() {
   const completedMilestones = dashboard?.completed_milestones ?? 0
 
   const milestones = milestonesQuery.data || []
-  const nextMilestone = milestones.find(m => !m.completed)
+  const nextMilestone = milestones.find(m => m.status !== 'Completed')
 
   const upcoming = (appointmentsQuery.data || []).find(a => a.status === 'pending' || a.status === 'confirmed')
   const motivation = feedbackQuery.data?.tips?.[0]
@@ -117,7 +117,15 @@ export default function PatientDashboard() {
         >
           <div className="text-sm text-[var(--textSoft)]">Today's Milestone</div>
           <div className="serif-heading text-2xl text-[var(--textDark)] mt-2">
-            {nextMilestone ? `${nextMilestone.title} • Day ${nextMilestone.due_day}` : 'No milestones assigned yet.'}
+            {nextMilestone ? (
+               nextMilestone.is_available_today ? (
+                 `${nextMilestone.title} • Day ${nextMilestone.due_day}`
+               ) : (
+                 <div className="text-lg text-[var(--primaryGreen)]">
+                    All caught up! Next milestone available tomorrow.
+                 </div>
+               )
+            ) : 'No milestones assigned yet.'}
           </div>
         </motion.div>
 
