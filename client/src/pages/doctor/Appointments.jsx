@@ -138,6 +138,13 @@ export default function DoctorAppointments() {
 
             <p className="mt-4 text-sm text-[var(--textSoft)]">Status: {appointment.status}</p>
 
+            {appointment.problem_description && (
+              <div className="mt-4 p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Problem Description</p>
+                <p className="text-sm text-slate-600 leading-relaxed italic">"{appointment.problem_description}"</p>
+              </div>
+            )}
+
             {appointment.notes && (
               <p className="mt-3 text-sm text-[var(--textSoft)]">Notes: {appointment.notes}</p>
             )}
@@ -174,6 +181,13 @@ export default function DoctorAppointments() {
             <p className="mt-2 text-[var(--textSoft)]">
               Generate credentials and assign a rehabilitation program.
             </p>
+
+            {selected.problem_description && (
+              <div className="mt-4 p-5 bg-emerald-50/50 rounded-3xl border border-emerald-100/50">
+                <p className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest mb-2">Patient's Problem Description</p>
+                <p className="text-sm text-emerald-800 leading-relaxed italic">"{selected.problem_description}"</p>
+              </div>
+            )}
 
             <form className="mt-6 space-y-4" onSubmit={submitCreatePatient}>
               <Input placeholder="Patient name" value={patientName} onChange={e => setPatientName(e.target.value)} />

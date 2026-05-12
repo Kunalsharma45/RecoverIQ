@@ -37,15 +37,28 @@ export const patientApi = {
 }
 
 export const doctorApi = {
-  getDashboard: () => api.get('/doctor/patients'), // assuming dashboard uses patient list for now
+  getDashboard: () => api.get('/doctor/dashboard-summary'),
   getPatients: () => api.get('/doctor/patients'),
+  getPatientDetail: (id) => api.get(`/doctor/patients/${id}`),
+  getPatientNotes: (id) => api.get(`/doctor/patients/${id}/notes`),
+  addPatientNote: (id, data) => api.post(`/doctor/patients/${id}/notes`, data),
   getMilestones: (params) => api.get('/doctor/milestones', { params }),
   createMilestone: (programId, data) => api.post(`/doctor/programs/${programId}/milestones`, data),
   updateMilestone: (id, data) => api.patch(`/doctor/milestones/${id}`, data),
   deleteMilestone: (id) => api.delete(`/doctor/milestones/${id}`),
   reviewMilestone: (progressId, data) => api.patch(`/doctor/milestones/review/${progressId}`, data),
   getPrograms: () => api.get('/doctor/programs'),
+  createProgram: (data) => api.post('/doctor/programs', data),
+  getProgramDetail: (id) => api.get(`/doctor/programs/${id}`),
+  updateProgram: (id, data) => api.patch(`/doctor/programs/${id}`, data),
+  deleteProgram: (id) => api.delete(`/doctor/programs/${id}`),
+  duplicateProgram: (id) => api.post(`/doctor/programs/${id}/duplicate`),
+  assignProgram: (patientId, data) => api.post(`/doctor/patients/${patientId}/assign-program`, data),
   getAppointments: () => api.get('/doctor/appointments'),
+  updateAppointment: (id, data) => api.patch(`/doctor/appointments/${id}`, data),
+  getAnalytics: (params) => api.get('/doctor/analytics', { params }),
+  getProfile: () => api.get('/doctor/profile'),
+  updateProfile: (data) => api.put('/doctor/profile', data),
 }
 
 export default api

@@ -17,15 +17,20 @@ class DashboardController extends Controller
             ->with(['doctor.user', 'program.milestones', 'progress.milestone'])
             ->firstOrFail();
 
-        $totalMilestones     = $patient->program?->milestones->count() ?? 0;
-        $completedMilestones = $patient->progress->whereNotNull('completed_at')->count();
-        $completionPercent   = $totalMilestones > 0
+        $programMilestoneIds = $patient->program?->milestones->pluck('id') ?? collect();
+        $totalMilestones     = $programMilestoneIds->count();
+        
+        $completedMilestones = \App\Models\PatientProgress::where('patient_id', $patient->id)
+            ->whereIn('milestone_id', $programMilestoneIds)
+            ->where('status', 'Completed')
+            ->count();
+
+        $completionPercent = $totalMilestones > 0
             ? round(($completedMilestones / $totalMilestones) * 100)
             : 0;
 
-        $daysSinceEnrolled = $patient->enrolled_at
-            ? (int) $patient->enrolled_at->diffInDays(now())
-            : 0;
+        $startDate = \Carbon\Carbon::parse($patient->enrolled_at ?? $patient->created_at)->startOfDay();
+        $daysSinceEnrolled = (int) \Carbon\Carbon::today()->diffInDays($startDate);
 
         return response()->json([
             'patient'             => $patient,
@@ -47,7 +52,13 @@ class DashboardController extends Controller
             ->with(['program.milestones', 'progress'])
             ->firstOrFail();
 
-        $completedIds  = $patient->progress->whereNotNull('completed_at')->pluck('milestone_id');
+        $programMilestones = $patient->program?->milestones ?? collect();
+        $programMilestoneIds = $programMilestones->pluck('id');
+
+        $completedIds = $patient->progress()
+            ->whereIn('milestone_id', $programMilestoneIds)
+            ->whereNotNull('completed_at')
+            ->pluck('milestone_id');
         $nextMilestone = $patient->program?->milestones
             ->whereNotIn('id', $completedIds)
             ->sortBy('due_day')
@@ -59,8 +70,12 @@ class DashboardController extends Controller
             $tips[] = "Your next goal: \"{$nextMilestone->title}\" — due by day {$nextMilestone->due_day}.";
         }
 
-        $totalMilestones = $patient->program?->milestones->count() ?? 0;
+        $totalMilestones = $programMilestones->count();
         $completedCount  = $completedIds->count();
+        
+        $startDate = \Carbon\Carbon::parse($patient->enrolled_at ?? $patient->created_at)->startOfDay();
+        $today = \Carbon\Carbon::today();
+        $currentDay = (int) $today->diffInDays($startDate) + 1;
 
         if ($totalMilestones > 0) {
             $pct = round(($completedCount / $totalMilestones) * 100);

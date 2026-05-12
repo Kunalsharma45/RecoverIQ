@@ -25,9 +25,13 @@ class RecoveryProgramController extends Controller
             return response()->json(['message' => 'Assigned program not found.'], 404);
         }
 
-        // Calculate progress
-        $totalMilestones = $program->milestones()->count();
-        $completedMilestones = $patient->progress()->where('status', 'Completed')->count();
+        // Calculate progress - ONLY for current program milestones
+        $milestoneIds = $program->milestones()->pluck('id');
+        $totalMilestones = $milestoneIds->count();
+        $completedMilestones = $patient->progress()
+            ->whereIn('milestone_id', $milestoneIds)
+            ->where('status', 'Completed')
+            ->count();
         $overallProgress = $totalMilestones > 0 ? round(($completedMilestones / $totalMilestones) * 100) : 0;
 
         // Group milestones into weekly phases
@@ -38,8 +42,14 @@ class RecoveryProgramController extends Controller
             $weeklyRoadmap[$week][] = $ms;
         }
 
-        $startDate = ($patient->enrolled_at ?? $patient->created_at)->startOfDay();
-        $currentDay = (int) now()->startOfDay()->diffInDays($startDate) + 1;
+        $startDate = \Carbon\Carbon::parse($patient->enrolled_at ?? $patient->created_at)->startOfDay();
+        $today = \Carbon\Carbon::today();
+        
+        // Use absolute diff + 1 for day index
+        $currentDay = (int) $today->diffInDays($startDate) + 1;
+        
+        // If somehow today is before start date, current day is 1
+        if ($today->lt($startDate)) $currentDay = 1;
 
         // Get today's milestone
         $todayMilestone = $program->milestones()

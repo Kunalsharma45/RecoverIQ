@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api\Doctor;
 
 use App\Http\Controllers\Controller;
+use App\Models\Notification;
+use App\Models\PatientProgress;
 use App\Models\ProgramMilestone;
 use App\Models\RehabProgram;
 use Illuminate\Http\Request;
@@ -105,7 +107,35 @@ class MilestoneController extends Controller
             'reviewed_at'  => now(),
         ]);
 
-        return response()->json(['message' => 'Review submitted.', 'progress' => $progress]);
+        // Notify the patient about the doctor's review
+        $patientUser = $progress->patient?->user;
+        if ($patientUser) {
+            Notification::create([
+                'user_id' => $patientUser->id,
+                'type'    => 'milestone_review',
+                'data'    => [
+                    'title'         => 'Milestone Reviewed by Doctor',
+                    'message'       => 'Your doctor reviewed milestone: ' . ($progress->milestone?->title ?? 'your session') . '.',
+                    'status'        => $request->status,
+                    'doctor_notes'  => $request->doctor_notes,
+                    'milestone_id'  => $progress->milestone_id,
+                    'reviewed_at'   => now()->toDateTimeString(),
+                ],
+                'read_at' => null,
+            ]);
+
+            // Keep only the 3 most recent notifications — delete older ones
+            $keepIds = Notification::where('user_id', $patientUser->id)
+                ->latest()
+                ->limit(3)
+                ->pluck('id');
+
+            Notification::where('user_id', $patientUser->id)
+                ->whereNotIn('id', $keepIds)
+                ->delete();
+        }
+
+        return response()->json(['message' => 'Review submitted.', 'progress' => $progress->load('milestone')]);
     }
 
     /**

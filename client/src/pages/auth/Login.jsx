@@ -180,7 +180,6 @@ export default function Login() {
                   >
                     <option value="patient">Login as Patient</option>
                     <option value="doctor">Login as Doctor</option>
-                    <option value="admin">Login as Admin</option>
                   </select>
                   <div className="absolute inset-y-0 right-6 flex items-center pointer-events-none text-[var(--textSoft)]">
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>

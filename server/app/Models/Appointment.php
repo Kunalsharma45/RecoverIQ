@@ -15,6 +15,7 @@ class Appointment extends Model
         'slot_at',
         'status',
         'notes',
+        'problem_description',
     ];
 
     protected $casts = [

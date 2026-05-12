@@ -9,13 +9,16 @@ import PublicLayout from '../layouts/PublicLayout.jsx'
 import DoctorLayout from '../layouts/DoctorLayout.jsx'
 import DoctorDashboard from '../pages/doctor/Dashboard.jsx'
 import DoctorAppointments from '../pages/doctor/Appointments.jsx'
+import DoctorPatients from '../pages/doctor/Patients.jsx'
+import DoctorPrograms from '../pages/doctor/Programs.jsx'
+import DoctorAnalytics from '../pages/doctor/Analytics.jsx'
+import DoctorProfile from '../pages/doctor/Profile.jsx'
 import PatientLayout from '../layouts/PatientLayout.jsx'
 import PatientDashboard from '../pages/patient/Dashboard.jsx'
 import PatientMilestones from '../pages/patient/Milestones.jsx'
 import PatientAppointments from '../pages/patient/Appointments.jsx'
 import PatientSettings from '../pages/patient/Settings.jsx'
 
-import DoctorMilestones from '../pages/doctor/Milestones.jsx'
 import PatientRecoveryProgram from '../pages/patient/RecoveryProgram.jsx'
 import PatientTimeline from '../pages/patient/Timeline.jsx'
 
@@ -44,12 +47,10 @@ export default function RoutesIndex() {
       >
         <Route index element={<DoctorDashboard />} />
         <Route path="appointments" element={<DoctorAppointments />} />
-        <Route path="patients" element={<Placeholder title="Patients" />} />
-        <Route path="programs" element={<Placeholder title="Programs" />} />
-        <Route path="milestones" element={<DoctorMilestones />} />
-        <Route path="reviews" element={<Placeholder title="Reviews & Notes" />} />
-        <Route path="analytics" element={<Placeholder title="Analytics" />} />
-        <Route path="profile" element={<Placeholder title="Profile" />} />
+        <Route path="patients" element={<DoctorPatients />} />
+        <Route path="programs" element={<DoctorPrograms />} />
+        <Route path="analytics" element={<DoctorAnalytics />} />
+        <Route path="profile" element={<DoctorProfile />} />
       </Route>
 
       <Route
@@ -63,11 +64,6 @@ export default function RoutesIndex() {
         <Route path="timeline" element={<PatientTimeline />} />
         <Route path="settings" element={<PatientSettings />} />
       </Route>
-      <Route
-        path="/admin/*"
-        element={<ProtectedRoute roles={["admin"]}><Placeholder title="Admin" /></ProtectedRoute>}
-      />
-
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   )

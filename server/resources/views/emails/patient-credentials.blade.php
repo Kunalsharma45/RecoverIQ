@@ -5,10 +5,20 @@
 
     <p class="text">
         Your doctor has enrolled you in a recovery program on <strong>RecoverIQ</strong>.
-        Use the credentials below to access your patient dashboard.
+        A temporary rehabilitation program has been assigned to you starting <strong>today</strong>. The details of your personalized long-term plan will be discussed during your upcoming appointment.
     </p>
 
-    <div class="info-box">
+    @if($appointment)
+    <div class="info-box" style="margin-top: 20px; background: #f0f7f4; border-color: #d1e7dd;">
+        <p style="margin: 0 0 10px 0; font-weight: bold; color: #234032;">📅 Scheduled Appointment</p>
+        <div class="info-row">
+            <span class="info-label">Date & Time</span>
+            <span class="info-value">{{ $appointment->slot_at->format('M d, Y \a\t h:i A') }} (IST)</span>
+        </div>
+    </div>
+    @endif
+
+    <div class="info-box" style="margin-top: 20px;">
         <div class="info-row">
             <span class="info-label">Email</span>
             <span class="info-value">{{ $user->email }}</span>

@@ -13,9 +13,12 @@ class ProgramMilestone extends Model
         'title',
         'description',
         'difficulty',
+        'intensity',
         'duration_minutes',
         'category',
         'exercise_instructions',
+        'precautions',
+        'recovery_goals',
         'media_url',
         'due_day'
     ];

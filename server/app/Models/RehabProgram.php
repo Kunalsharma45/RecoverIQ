@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class RehabProgram extends Model
 {
-    protected $fillable = ['name', 'duration_days', 'description'];
+    protected $fillable = ['name', 'duration_days', 'description', 'category', 'difficulty', 'target_patients', 'recovery_focus'];
 
     public function milestones(): HasMany
     {

@@ -19,8 +19,9 @@ class AppointmentController extends Controller
             'doctor_id'       => 'required|exists:doctors,id',
             'booked_by_name'  => 'required|string|max:255',
             'booked_by_email' => 'required|email',
-            'slot_at'         => 'required|date|after:now',
-            'notes'           => 'nullable|string',
+            'slot_at'             => 'required|date|after:now',
+            'notes'               => 'nullable|string',
+            'problem_description' => 'nullable|string|max:1000',
         ]);
 
         // Check slot is not already taken
@@ -34,13 +35,14 @@ class AppointmentController extends Controller
         }
 
         $appointment = Appointment::create([
-            'doctor_id'       => $request->doctor_id,
-            'patient_id'      => null,
-            'booked_by_name'  => $request->booked_by_name,
-            'booked_by_email' => $request->booked_by_email,
-            'slot_at'         => $request->slot_at,
-            'notes'           => $request->notes,
-            'status'          => 'pending',
+            'doctor_id'           => $request->doctor_id,
+            'patient_id'          => null,
+            'booked_by_name'      => $request->booked_by_name,
+            'booked_by_email'     => $request->booked_by_email,
+            'slot_at'             => $request->slot_at,
+            'notes'               => $request->notes,
+            'problem_description' => $request->problem_description,
+            'status'              => 'pending',
         ]);
 
         return response()->json([

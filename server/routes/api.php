@@ -6,9 +6,14 @@ use App\Http\Controllers\Api\Admin\ProgramController as AdminProgramController;
 use App\Http\Controllers\Api\Admin\AppointmentController as AdminAppointmentController;
 use App\Http\Controllers\Api\Admin\ReportController;
 use App\Http\Controllers\Api\Doctor\PatientController as DoctorPatientController;
+use App\Http\Controllers\Api\Doctor\PatientNotesController;
 use App\Http\Controllers\Api\Doctor\AppointmentController as DoctorAppointmentController;
 use App\Http\Controllers\Api\Doctor\ReviewController;
 use App\Http\Controllers\Api\Doctor\MilestoneController;
+use App\Http\Controllers\Api\Doctor\ProgramController as DoctorProgramController;
+use App\Http\Controllers\Api\Doctor\AnalyticsController as DoctorAnalyticsController;
+use App\Http\Controllers\Api\Doctor\DashboardController as DoctorDashboardController;
+use App\Http\Controllers\Api\Doctor\ProfileController as DoctorProfileController;
 use App\Http\Controllers\Api\Patient\DashboardController;
 use App\Http\Controllers\Api\Patient\ProgressController;
 use App\Http\Controllers\Api\Patient\AnalyticsController;
@@ -80,6 +85,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/patients', [DoctorPatientController::class, 'index']);
         Route::post('/patients', [DoctorPatientController::class, 'store']);
         Route::get('/patients/{id}', [DoctorPatientController::class, 'show']);
+        Route::get('/patients/{id}/notes', [PatientNotesController::class, 'index']);
+        Route::post('/patients/{id}/notes', [PatientNotesController::class, 'store']);
 
         // Appointments
         Route::get('/appointments', [DoctorAppointmentController::class, 'index']);
@@ -90,14 +97,29 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/reviews/{patientId}', [ReviewController::class, 'show']);
 
         // Programs & Milestones
+        Route::get('/programs', [DoctorProgramController::class, 'index']);
+        Route::post('/programs', [DoctorProgramController::class, 'store']);
+        Route::get('/programs/{id}', [DoctorProgramController::class, 'show']);
+        Route::patch('/programs/{id}', [DoctorProgramController::class, 'update']);
+        Route::delete('/programs/{id}', [DoctorProgramController::class, 'destroy']);
+        Route::post('/programs/{id}/duplicate', [DoctorProgramController::class, 'duplicate']);
+        Route::post('/patients/{patientId}/assign-program', [DoctorProgramController::class, 'assign']);
+
         Route::get('/milestones', [MilestoneController::class, 'index']);
         Route::post('/programs/{id}/milestones', [MilestoneController::class, 'store']);
         Route::patch('/milestones/{id}', [MilestoneController::class, 'update']);
         Route::delete('/milestones/{id}', [MilestoneController::class, 'destroy']);
         Route::patch('/milestones/review/{progressId}', [MilestoneController::class, 'review']);
-        
-        // For dropdowns/filters
-        Route::get('/programs', [AdminProgramController::class, 'index']);
+
+        // Analytics
+        Route::get('/analytics', [DoctorAnalyticsController::class, 'index']);
+
+        // Dashboard Summary
+        Route::get('/dashboard-summary', [DoctorDashboardController::class, 'index']);
+
+        // Profile
+        Route::get('/profile', [DoctorProfileController::class, 'show']);
+        Route::put('/profile', [DoctorProfileController::class, 'update']);
     });
 
     /*

@@ -43,16 +43,18 @@ class AppointmentController extends Controller
         }
 
         $request->validate([
-            'slot_at' => 'required|date|after:now',
-            'notes'   => 'nullable|string',
+            'slot_at'             => 'required|date|after:now',
+            'notes'               => 'nullable|string',
+            'problem_description' => 'nullable|string|max:1000',
         ]);
 
         $appointment = Appointment::create([
-            'patient_id' => $patient->id,
-            'doctor_id'  => $patient->doctor_id,
-            'slot_at'    => $request->slot_at,
-            'notes'      => $request->notes,
-            'status'     => 'pending',
+            'patient_id'          => $patient->id,
+            'doctor_id'           => $patient->doctor_id,
+            'slot_at'             => $request->slot_at,
+            'notes'               => $request->notes,
+            'problem_description' => $request->problem_description,
+            'status'              => 'pending',
         ]);
 
         return response()->json([

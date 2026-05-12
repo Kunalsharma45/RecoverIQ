@@ -12,6 +12,7 @@ export default function Book() {
   const [selectedDate, setSelectedDate] = useState('')
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
+  const [problemDescription, setProblemDescription] = useState('')
 
   const doctorsQuery = useQuery({
     queryKey: ['doctors'],
@@ -40,6 +41,7 @@ export default function Book() {
       setSlotAt('')
       setName('')
       setEmail('')
+      setProblemDescription('')
       setSelectedDate('')
       setSelectedDoctor(null)
     },
@@ -53,6 +55,7 @@ export default function Book() {
       booked_by_email: email,
       doctor_id: selectedDoctor.id,
       slot_at: slotAt,
+      problem_description: problemDescription,
     })
   }
 
@@ -227,6 +230,15 @@ export default function Book() {
                       <div className="space-y-4">
                         <Input required placeholder="Full Legal Name" value={name} onChange={e => setName(e.target.value)} />
                         <Input required type="email" placeholder="Email Address" value={email} onChange={e => setEmail(e.target.value)} />
+                        <div className="space-y-2">
+                           <label className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] px-1">Describe your problem</label>
+                           <textarea 
+                             placeholder="E.g. Persistent knee pain after running, stiff neck since morning..." 
+                             value={problemDescription}
+                             onChange={e => setProblemDescription(e.target.value)}
+                             className="w-full px-6 py-5 rounded-[28px] bg-slate-50 border border-slate-100 focus:bg-white focus:ring-4 focus:ring-[var(--primaryGreen)]/5 focus:border-[var(--primaryGreen)] transition-all outline-none text-sm leading-relaxed min-h-[140px] resize-none"
+                           />
+                        </div>
                       </div>
                     </div>
 

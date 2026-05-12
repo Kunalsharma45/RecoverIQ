@@ -5,8 +5,6 @@ import {
   CalendarCheck,
   Users,
   ClipboardList,
-  Flag,
-  FileText,
   BarChart3,
   UserCircle,
   LogOut,
@@ -19,8 +17,6 @@ const navItems = [
   { to: '/doctor/appointments', label: 'Appointments', icon: CalendarCheck },
   { to: '/doctor/patients', label: 'Patients', icon: Users },
   { to: '/doctor/programs', label: 'Rehabilitation Programs', icon: ClipboardList },
-  { to: '/doctor/milestones', label: 'Milestones', icon: Flag },
-  { to: '/doctor/reviews', label: 'Reviews & Notes', icon: FileText },
   { to: '/doctor/analytics', label: 'Analytics', icon: BarChart3 },
   { to: '/doctor/profile', label: 'Profile', icon: UserCircle },
 ]
@@ -68,7 +64,7 @@ export default function DoctorLayout() {
           </button>
         </aside>
 
-        <section className="space-y-6">
+        <section className="space-y-6 max-w-full overflow-x-hidden">
           <motion.div
             className="rounded-[32px] bg-white/70 border border-[var(--borderSoft)] shadow-lg p-6"
             initial={{ opacity: 0, y: 24 }}

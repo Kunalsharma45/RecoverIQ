@@ -11,6 +11,7 @@ class PatientCredentialsMail extends BaseRecoverIQMail
     public function __construct(
         public readonly User   $user,
         public readonly string $plainPassword,
+        public readonly ?\App\Models\Appointment $appointment = null,
     ) {
         parent::__construct();
     }
