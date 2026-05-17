@@ -24,7 +24,7 @@ class DashboardController extends Controller
         // 1. Top Metrics (Scoped to doctor)
         $activePatients = $doctor->patients()->count();
         $successRate = 92; // Placeholder
-        $pendingReviews = PatientProgress::whereHas('patient', function($q) use ($doctor) {
+        $pendingReviews = PatientProgress::whereHas('patient', function ($q) use ($doctor) {
             $q->where('doctor_id', $doctor->id);
         })->where('status', 'Pending Review')->count();
 
@@ -35,7 +35,7 @@ class DashboardController extends Controller
 
         // 2. Upcoming Appointments (Next 5)
         $upcomingAppointments = $doctor->appointments()
-            ->with(['patient.user', 'patient.program'])
+            ->with(['patient.user', 'patient.program', 'prescription'])
             ->where('slot_at', '>=', now())
             ->where('status', 'confirmed')
             ->orderBy('slot_at', 'asc')
@@ -43,7 +43,7 @@ class DashboardController extends Controller
             ->get();
 
         // 3. Recent Activity (Scoped to doctor's patients)
-        $activities = PatientProgress::whereHas('patient', function($q) use ($doctor) {
+        $activities = PatientProgress::whereHas('patient', function ($q) use ($doctor) {
             $q->where('doctor_id', $doctor->id);
         })
             ->with(['patient.user', 'milestone'])
@@ -51,7 +51,7 @@ class DashboardController extends Controller
             ->latest('completed_at')
             ->take(10)
             ->get()
-            ->map(function($progress) {
+            ->map(function ($progress) {
                 return [
                     'id' => $progress->id,
                     'patient_name' => $progress->patient->user->name,
@@ -65,11 +65,11 @@ class DashboardController extends Controller
         $attentionNeeded = $doctor->patients()
             ->with(['user'])
             ->get()
-            ->map(function($patient) {
+            ->map(function ($patient) {
                 $lastLog = $patient->logs()->latest()->first();
                 $risk = 0;
                 $issue = '';
-                
+
                 if (!$lastLog || $lastLog->created_at->lt(now()->subDays(2))) {
                     $risk = 40;
                     $issue = 'Inactive for 2 days';
@@ -91,7 +91,7 @@ class DashboardController extends Controller
             ->values();
 
         // 5. Recovery Snapshot (Scoped to doctor's patients)
-        $snapshot = PatientProgress::whereHas('patient', function($q) use ($doctor) {
+        $snapshot = PatientProgress::whereHas('patient', function ($q) use ($doctor) {
             $q->where('doctor_id', $doctor->id);
         })
             ->where('completed_at', '>=', now()->subDays(7))

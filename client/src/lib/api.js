@@ -32,6 +32,8 @@ export const patientApi = {
   updateProgress: (data) => api.post('/patient/progress', data),
   getAppointments: () => api.get('/patient/appointments'),
   bookAppointment: (data) => api.post('/patient/appointments', data),
+  getPrescriptions: () => api.get('/patient/prescriptions'),
+  getPrescription: (id) => api.get(`/patient/prescriptions/${id}`),
   getNotifications: () => api.get('/patient/notifications'),
   markNotificationRead: (id) => api.patch(`/patient/notifications/${id}/read`),
 }
@@ -56,6 +58,7 @@ export const doctorApi = {
   assignProgram: (patientId, data) => api.post(`/doctor/patients/${patientId}/assign-program`, data),
   getAppointments: () => api.get('/doctor/appointments'),
   updateAppointment: (id, data) => api.patch(`/doctor/appointments/${id}`, data),
+  createPrescription: (appointmentId, data) => api.post(`/doctor/appointments/${appointmentId}/prescription`, data),
   getAnalytics: (params) => api.get('/doctor/analytics', { params }),
   getProfile: () => api.get('/doctor/profile'),
   updateProfile: (data) => api.put('/doctor/profile', data),

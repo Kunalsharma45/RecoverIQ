@@ -4,8 +4,13 @@ namespace App\Http\Controllers\Api\Public;
 
 use App\Http\Controllers\Controller;
 use App\Models\Appointment;
-use App\Models\Doctor;
+use App\Mail\PatientCredentialsMail;
+use App\Models\Patient;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 
 class AppointmentController extends Controller
 {
@@ -18,7 +23,7 @@ class AppointmentController extends Controller
         $request->validate([
             'doctor_id'       => 'required|exists:doctors,id',
             'booked_by_name'  => 'required|string|max:255',
-            'booked_by_email' => 'required|email',
+            'booked_by_email' => 'required|email|confirmed',
             'slot_at'             => 'required|date|after:now',
             'notes'               => 'nullable|string',
             'problem_description' => 'nullable|string|max:1000',
@@ -34,20 +39,67 @@ class AppointmentController extends Controller
             return response()->json(['message' => 'This slot is no longer available.'], 422);
         }
 
-        $appointment = Appointment::create([
-            'doctor_id'           => $request->doctor_id,
-            'patient_id'          => null,
-            'booked_by_name'      => $request->booked_by_name,
-            'booked_by_email'     => $request->booked_by_email,
-            'slot_at'             => $request->slot_at,
-            'notes'               => $request->notes,
-            'problem_description' => $request->problem_description,
-            'status'              => 'pending',
-        ]);
+        $booking = DB::transaction(function () use ($request) {
+            $user = User::where('email', $request->booked_by_email)->first();
+            $plainPassword = null;
+
+            if ($user && ! $user->isPatient()) {
+                abort(response()->json(['message' => 'This email is already used by another account.'], 422));
+            }
+
+            if (! $user) {
+                $plainPassword = Str::random(10);
+
+                $user = User::create([
+                    'name'     => $request->booked_by_name,
+                    'email'    => $request->booked_by_email,
+                    'password' => $plainPassword,
+                    'role'     => 'patient',
+                ]);
+            }
+
+            $patient = $user->patient;
+
+            if (! $patient) {
+                $patient = Patient::create([
+                    'user_id'     => $user->id,
+                    'doctor_id'   => $request->doctor_id,
+                    'program_id'  => null,
+                    'enrolled_at' => now(),
+                ]);
+            }
+
+            $appointment = Appointment::create([
+                'doctor_id'           => $request->doctor_id,
+                'patient_id'          => $patient->id,
+                'booked_by_name'      => $request->booked_by_name,
+                'booked_by_email'     => $request->booked_by_email,
+                'slot_at'             => $request->slot_at,
+                'notes'               => $request->notes,
+                'problem_description' => $request->problem_description,
+                'status'              => 'pending',
+            ]);
+
+            return [
+                'user' => $user,
+                'appointment' => $appointment,
+                'plainPassword' => $plainPassword,
+            ];
+        });
+
+        if ($booking['plainPassword']) {
+            $booking['appointment']->loadMissing('doctor.user');
+
+            Mail::to($booking['user']->email)->send(
+                new PatientCredentialsMail($booking['user'], $booking['plainPassword'], $booking['appointment'])
+            );
+        }
 
         return response()->json([
-            'message'     => 'Appointment booked. You will receive a confirmation soon.',
-            'appointment' => $appointment->load('doctor.user'),
+            'message'     => $booking['plainPassword']
+                ? 'Appointment booked. Your patient login credentials have been emailed to you.'
+                : 'Appointment booked.',
+            'appointment' => $booking['appointment']->load('doctor.user', 'patient.user'),
         ], 201);
     }
 }

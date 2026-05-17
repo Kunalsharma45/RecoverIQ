@@ -36,4 +36,9 @@ class Appointment extends Model
     {
         return $this->hasOne(DoctorReview::class);
     }
+
+    public function prescription(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(Prescription::class);
+    }
 }
