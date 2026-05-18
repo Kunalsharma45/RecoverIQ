@@ -23,7 +23,7 @@ class AppointmentController extends Controller
             ->update(['patient_id' => $patient->id]);
 
         $appointments = Appointment::where('patient_id', $patient->id)
-            ->with('doctor.user')
+            ->with(['doctor.user', 'prescription'])
             ->orderBy('slot_at')
             ->get();
 
@@ -47,6 +47,16 @@ class AppointmentController extends Controller
             'notes'               => 'nullable|string',
             'problem_description' => 'nullable|string|max:1000',
         ]);
+
+        // Prevent double booking for same doctor/time
+        $conflict = Appointment::where('doctor_id', $patient->doctor_id)
+            ->where('slot_at', $request->slot_at)
+            ->whereIn('status', ['pending', 'confirmed'])
+            ->exists();
+
+        if ($conflict) {
+            return response()->json(['message' => 'This slot is no longer available.'], 422);
+        }
 
         $appointment = Appointment::create([
             'patient_id'          => $patient->id,

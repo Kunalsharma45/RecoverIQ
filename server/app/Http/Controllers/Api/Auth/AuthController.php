@@ -22,6 +22,7 @@ class AuthController extends Controller
         $request->validate([
             'email'    => 'required|email',
             'password' => 'required|string',
+            'role'     => 'required|in:patient,doctor,admin',
         ]);
 
         $user = User::where('email', $request->email)->first();
@@ -30,6 +31,12 @@ class AuthController extends Controller
             throw ValidationException::withMessages([
                 'email' => ['The provided credentials are incorrect.'],
             ]);
+        }
+
+        if ($user->role !== $request->role) {
+            return response()->json([
+                'message' => 'This account is registered as ' . $user->role . '. Please select the ' . $user->role . ' login option.',
+            ], 403);
         }
 
         if (! $user->is_active) {

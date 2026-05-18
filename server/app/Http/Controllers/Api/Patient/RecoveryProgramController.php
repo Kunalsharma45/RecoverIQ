@@ -44,10 +44,10 @@ class RecoveryProgramController extends Controller
 
         $startDate = \Carbon\Carbon::parse($patient->enrolled_at ?? $patient->created_at)->startOfDay();
         $today = \Carbon\Carbon::today();
-        
+
         // Use absolute diff + 1 for day index
         $currentDay = (int) $today->diffInDays($startDate) + 1;
-        
+
         // If somehow today is before start date, current day is 1
         if ($today->lt($startDate)) $currentDay = 1;
 
@@ -55,6 +55,18 @@ class RecoveryProgramController extends Controller
         $todayMilestone = $program->milestones()
             ->where('due_day', $currentDay)
             ->first();
+
+        // If the patient already completed today's milestone, don't return it as "today_milestone"
+        if ($todayMilestone) {
+            $completed = $patient->progress()
+                ->where('milestone_id', $todayMilestone->id)
+                ->where('status', 'Completed')
+                ->exists();
+
+            if ($completed) {
+                $todayMilestone = null;
+            }
+        }
 
         // Get next milestone
         $upcomingMilestone = $program->milestones()

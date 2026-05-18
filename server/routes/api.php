@@ -30,6 +30,7 @@ use App\Http\Controllers\Api\Auth\VerificationController;
 | Public routes (no auth required)
 |----------------------------------------------------------------------
 */
+
 Route::prefix('auth')->group(function () {
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/register-doctor', [AuthController::class, 'registerDoctor']);
@@ -90,7 +91,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
         // Appointments
         Route::get('/appointments', [DoctorAppointmentController::class, 'index']);
+        Route::get('/appointments-counts', [DoctorAppointmentController::class, 'counts']);
         Route::patch('/appointments/{id}', [DoctorAppointmentController::class, 'update']);
+        // Prescriptions (doctor)
+        Route::post('/appointments/{id}/prescription', [\App\Http\Controllers\Api\Doctor\PrescriptionController::class, 'store']);
 
         // Reviews
         Route::post('/reviews', [ReviewController::class, 'store']);
@@ -143,6 +147,10 @@ Route::middleware('auth:sanctum')->group(function () {
         // Appointments
         Route::get('/appointments', [PatientAppointmentController::class, 'index']);
         Route::post('/appointments', [PatientAppointmentController::class, 'store']);
+
+        // Prescriptions (patient)
+        Route::get('/prescriptions', [\App\Http\Controllers\Api\Patient\PrescriptionController::class, 'index']);
+        Route::get('/prescriptions/{id}', [\App\Http\Controllers\Api\Patient\PrescriptionController::class, 'show']);
 
         // Reviews & Notifications
         Route::get('/reviews', [PatientAppointmentController::class, 'reviews']);
