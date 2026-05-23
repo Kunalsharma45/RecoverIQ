@@ -87,13 +87,11 @@ class AppointmentController extends Controller
             ];
         });
 
-        if ($booking['plainPassword']) {
-            $booking['appointment']->loadMissing('doctor.user');
-
-            Mail::to($booking['user']->email)->send(
-                new PatientCredentialsMail($booking['user'], $booking['plainPassword'], $booking['appointment'])
-            );
-        }
+        // NOTE: previously we emailed credentials immediately when a new patient account
+        // was created. To ensure the doctor approves before credentials are sent, we
+        // defer sending the PatientCredentialsMail until the doctor confirms the
+        // appointment. The plain password is kept on the user record for now and
+        // will be used (then hashed) when the doctor accepts.
 
         return response()->json([
             'message'     => $booking['plainPassword']

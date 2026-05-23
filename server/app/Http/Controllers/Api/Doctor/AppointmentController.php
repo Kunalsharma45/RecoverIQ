@@ -8,6 +8,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use App\Models\Notification as AppNotification;
 use App\Events\AppointmentCompleted;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Hash;
+use App\Mail\PatientCredentialsMail;
 
 class AppointmentController extends Controller
 {
@@ -55,7 +58,27 @@ class AppointmentController extends Controller
         if (($oldStatus !== 'completed') && ($appointment->status === 'completed')) {
             try {
                 $message = "Appointment #{$appointment->id} marked completed by doctor_id={$appointment->doctor_id}";
-                Log::info($message, ['appointment' => $appointment->toArray()]);
+                // If appointment moved to confirmed, send patient credentials (if present and not yet sent)
+                if (($oldStatus !== 'confirmed') && ($appointment->status === 'confirmed')) {
+                    try {
+                        if ($appointment->patient && $appointment->patient->user) {
+                            $user = $appointment->patient->user;
+
+                            // If the user's password appears to be stored in plaintext (legacy), send it now
+                            if (!str_starts_with($user->password, '$2y$') && !str_starts_with($user->password, '$argon')) {
+                                $plain = $user->password;
+                                Mail::to($user->email)->send(new PatientCredentialsMail($user, $plain, $appointment));
+
+                                // Hash the password after emailing so it is not stored in plaintext
+                                $user->password = Hash::make($plain);
+                                $user->save();
+                            }
+                        }
+                    } catch (\Throwable $e) {
+                        Log::error('Failed to send patient credentials on confirm: ' . $e->getMessage());
+                    }
+                }
+
 
                 // Notify patient
                 if ($appointment->patient && $appointment->patient->user) {
