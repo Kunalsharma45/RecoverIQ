@@ -52,8 +52,15 @@ class RecoveryProgramController extends Controller
         if ($today->lt($startDate)) $currentDay = 1;
 
         // Get today's milestone
+        $completedMilestoneIds = $patient->progress()
+            ->whereIn('milestone_id', $milestones->pluck('id'))
+            ->where('status', 'Completed')
+            ->pluck('milestone_id')
+            ->all();
+
         $todayMilestone = $program->milestones()
             ->where('due_day', $currentDay)
+            ->whereNotIn('id', $completedMilestoneIds)
             ->first();
 
         // If the patient already completed today's milestone, don't return it as "today_milestone"
@@ -71,6 +78,7 @@ class RecoveryProgramController extends Controller
         // Get next milestone
         $upcomingMilestone = $program->milestones()
             ->where('due_day', '>', $currentDay)
+            ->whereNotIn('id', $completedMilestoneIds)
             ->orderBy('due_day')
             ->first();
 

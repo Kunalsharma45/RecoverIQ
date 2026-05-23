@@ -54,53 +54,74 @@ class AppointmentController extends Controller
         $oldStatus = $appointment->status;
         $appointment->update($data);
 
-        // If appointment moved to completed, create notifications and log
-        if (($oldStatus !== 'completed') && ($appointment->status === 'completed')) {
+        // If appointment moved to confirmed, notify patient that it has been scheduled/accepted.
+        if ($oldStatus !== 'confirmed' && $appointment->status === 'confirmed') {
             try {
-                $message = "Appointment #{$appointment->id} marked completed by doctor_id={$appointment->doctor_id}";
-                // If appointment moved to confirmed, send patient credentials (if present and not yet sent)
-                if (($oldStatus !== 'confirmed') && ($appointment->status === 'confirmed')) {
-                    try {
-                        if ($appointment->patient && $appointment->patient->user) {
-                            $user = $appointment->patient->user;
+                if ($appointment->patient && $appointment->patient->user) {
+                    $user = $appointment->patient->user;
 
-                            // If the user's password appears to be stored in plaintext (legacy), send it now
-                            if (!str_starts_with($user->password, '$2y$') && !str_starts_with($user->password, '$argon')) {
-                                $plain = $user->password;
-                                Mail::to($user->email)->send(new PatientCredentialsMail($user, $plain, $appointment));
+                    // If the user's password appears to be stored in plaintext (legacy), send it now.
+                    if (!str_starts_with($user->password, '$2y$') && !str_starts_with($user->password, '$argon')) {
+                        $plain = $user->password;
+                        Mail::to($user->email)->send(new PatientCredentialsMail($user, $plain, $appointment));
 
-                                // Hash the password after emailing so it is not stored in plaintext
-                                $user->password = Hash::make($plain);
-                                $user->save();
-                            }
-                        }
-                    } catch (\Throwable $e) {
-                        Log::error('Failed to send patient credentials on confirm: ' . $e->getMessage());
+                        // Hash the password after emailing so it is not stored in plaintext.
+                        $user->password = Hash::make($plain);
+                        $user->save();
                     }
+
+                    AppNotification::create([
+                        'user_id' => $user->id,
+                        'type' => 'appointment_scheduled',
+                        'data' => [
+                            'appointment_id' => $appointment->id,
+                            'title' => 'Appointment scheduled',
+                            'message' => 'Your appointment has been accepted and scheduled by the doctor.',
+                        ],
+                    ]);
                 }
 
+                if ($appointment->doctor && $appointment->doctor->user) {
+                    AppNotification::create([
+                        'user_id' => $appointment->doctor->user->id,
+                        'type' => 'appointment_scheduled',
+                        'data' => [
+                            'appointment_id' => $appointment->id,
+                            'title' => 'Appointment scheduled',
+                            'message' => 'You accepted and scheduled this appointment.',
+                        ],
+                    ]);
+                }
+            } catch (\Throwable $e) {
+                Log::error('Failed to create scheduled notifications: ' . $e->getMessage());
+            }
+        }
 
-                // Notify patient
+        // If appointment moved to completed, create completion notifications and log.
+        if (($oldStatus !== 'completed') && ($appointment->status === 'completed')) {
+            try {
+                Log::info("Appointment #{$appointment->id} marked completed by doctor_id={$appointment->doctor_id}", ['appointment' => $appointment->toArray()]);
+
                 if ($appointment->patient && $appointment->patient->user) {
                     AppNotification::create([
                         'user_id' => $appointment->patient->user->id,
                         'type' => 'appointment_completed',
                         'data' => [
                             'appointment_id' => $appointment->id,
+                            'title' => 'Appointment completed',
                             'message' => 'Your appointment has been marked completed by the doctor.',
                         ],
                     ]);
-                    // Broadcast
                     event(new AppointmentCompleted($appointment, $appointment->patient->user->id));
                 }
 
-                // Notify doctor (self) as a record
                 if ($appointment->doctor && $appointment->doctor->user) {
                     AppNotification::create([
                         'user_id' => $appointment->doctor->user->id,
                         'type' => 'appointment_completed',
                         'data' => [
                             'appointment_id' => $appointment->id,
+                            'title' => 'Appointment completed',
                             'message' => 'You have completed the appointment.',
                         ],
                     ]);
