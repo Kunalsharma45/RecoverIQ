@@ -96,10 +96,7 @@ export default function DoctorAppointments() {
       return res.data;
     },
     onSuccess: (data) => {
-      setModalMessage(
-        data?.message ||
-          "Patient account successfully created. Credentials have been emailed securely.",
-      );
+      setModalMessage(data?.message || "Credentials sent successfully.");
       queryClient.invalidateQueries({
         predicate: (q) => q.queryKey?.[0] === "doctor-appointments",
       });
@@ -116,15 +113,8 @@ export default function DoctorAppointments() {
   });
 
   const handleAccept = async (appointment) => {
-    // First mark the appointment as confirmed
-    try {
-      await updateAppointment.mutateAsync({ id: appointment.id, status: 'confirmed' });
-    } catch (e) {
-      console.warn('Accept failed', e);
-      setModalMessage('Failed to accept appointment.');
-      return;
-    }
-    // Then open the patient creation modal
+    // Open the patient creation modal first; the backend will confirm the
+    // appointment only after credentials are sent successfully.
     setSelected(appointment);
     setPatientName(appointment.booked_by_name || "");
     setPatientEmail(appointment.booked_by_email || "");
@@ -169,16 +159,6 @@ export default function DoctorAppointments() {
         setModalMessage("Unable to create patient. Please try again.");
       }
       return;
-    }
-
-    try {
-      await updateAppointment.mutateAsync({
-        id: selected.id,
-        status: "confirmed",
-        notes,
-      });
-    } catch (err) {
-      setModalMessage("Patient created but updating appointment failed.");
     }
   };
 

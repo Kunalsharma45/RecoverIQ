@@ -64,42 +64,8 @@ export default function Book() {
 
   // Fallback doctors if DB is empty for demo purposes, else use real DB data
   const realDoctors = doctorsQuery.data || [];
-  const doctorCards = realDoctors.length
-    ? realDoctors
-    : [
-        {
-          id: 1,
-          name: "Dr. Sarah Lee",
-          specialization: "Orthopedic Rehabilitation",
-          experience: "12 Years",
-          rating: "4.9",
-          bio: "Specializing in sports injuries and post-surgical recovery. Passionate about evidence-based care.",
-        },
-        {
-          id: 2,
-          name: "Dr. James Chen",
-          specialization: "Neurological Physio",
-          experience: "8 Years",
-          rating: "4.8",
-          bio: "Expert in spinal cord injuries and neurological movement disorders. Helping patients regain independence.",
-        },
-        {
-          id: 3,
-          name: "Dr. Emily Carter",
-          specialization: "Geriatric Therapy",
-          experience: "15 Years",
-          rating: "5.0",
-          bio: "Dedicated to helping seniors regain mobility, confidence, and independence through gentle physical therapy.",
-        },
-        {
-          id: 4,
-          name: "Dr. Michael Barnes",
-          specialization: "Chronic Pain Management",
-          experience: "10 Years",
-          rating: "4.7",
-          bio: "Focused on holistic approaches to persistent pain conditions and improving daily function.",
-        },
-      ];
+  // Do not show hardcoded demo doctors — reflect DB state
+  const doctorCards = realDoctors.length ? realDoctors : [];
 
   const slotsByDate = useMemo(() => {
     const list = slotsQuery.data || [];

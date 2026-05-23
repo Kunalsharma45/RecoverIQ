@@ -42,26 +42,53 @@ class PatientController extends Controller
 
         $request->validate([
             'name'          => 'required|string|max:255',
-            'email'         => 'required|email|unique:users,email',
+            'email'         => 'required|email',
             'program_id'    => 'required|exists:rehab_programs,id',
-            'appointment_id'=> 'nullable|exists:appointments,id',
+            'appointment_id' => 'nullable|exists:appointments,id',
         ]);
 
         $password = Str::random(10);
 
-        $user = User::create([
-            'name'     => $request->name,
-            'email'    => $request->email,
-            'password' => $password,
-            'role'     => 'patient',
-        ]);
+        $user = User::where('email', $request->email)->first();
 
-        $patient = Patient::create([
-            'user_id'     => $user->id,
-            'doctor_id'   => $doctor->id,
-            'program_id'  => $request->program_id,
-            'enrolled_at' => now(),
-        ]);
+        if ($user && ! $user->isPatient()) {
+            return response()->json([
+                'message' => 'This email is already used by another account type.',
+            ], 422);
+        }
+
+        if (! $user) {
+            $user = User::create([
+                'name'     => $request->name,
+                'email'    => $request->email,
+                'password' => $password,
+                'role'     => 'patient',
+            ]);
+        } else {
+            $user->update([
+                'name'     => $request->name,
+                'password' => $password,
+                'role'     => 'patient',
+                'is_active' => true,
+            ]);
+        }
+
+        $patient = $user->patient;
+
+        if (! $patient) {
+            $patient = Patient::create([
+                'user_id'     => $user->id,
+                'doctor_id'   => $doctor->id,
+                'program_id'  => $request->program_id,
+                'enrolled_at' => now(),
+            ]);
+        } else {
+            $patient->update([
+                'doctor_id'   => $doctor->id,
+                'program_id'  => $request->program_id,
+                'enrolled_at' => $patient->enrolled_at ?? now(),
+            ]);
+        }
 
         $appointment = null;
 
@@ -78,6 +105,15 @@ class PatientController extends Controller
                 ->first();
         }
 
+        try {
+            // Send credentials email first so the appointment is not accepted unless email succeeds.
+            Mail::to($user->email)->send(new PatientCredentialsMail($user, $password, $appointment));
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'Credentials email could not be sent.',
+            ], 500);
+        }
+
         if ($appointment) {
             $appointment->update([
                 'patient_id' => $patient->id,
@@ -85,11 +121,8 @@ class PatientController extends Controller
             ]);
         }
 
-        // Send credentials email (logged locally in dev)
-        Mail::to($user->email)->send(new PatientCredentialsMail($user, $password, $appointment));
-
         return response()->json([
-            'message' => 'Patient created. Credentials sent to ' . $user->email,
+            'message' => 'Credentials sent successfully to ' . $user->email,
             'patient' => $patient->load(['user', 'program']),
         ], 201);
     }
@@ -159,7 +192,7 @@ class PatientController extends Controller
                 'completed_at' => $progress?->completed_at?->toDateString(),
                 'doctor_notes' => $progress?->doctor_notes,
                 'progress_id'  => $progress?->id,
-                'patient_notes'=> $progress?->notes,
+                'patient_notes' => $progress?->notes,
                 'log'          => $progress?->dailyLog ? [
                     'pain'     => $progress->dailyLog->pain_level,
                     'mobility' => $progress->dailyLog->mobility_score,
@@ -183,7 +216,7 @@ class PatientController extends Controller
     private function buildPatientSummary(Patient $patient): array
     {
         $totalMilestones    = $patient->program?->milestones->count() ?? 0;
-        $completedMilestones= $patient->progress->where('status', 'Completed')->count();
+        $completedMilestones = $patient->progress->where('status', 'Completed')->count();
         $completionPercent  = $totalMilestones > 0 ? round(($completedMilestones / $totalMilestones) * 100) : 0;
 
         // Adherence: % of days since enrollment that have a completed milestone
@@ -229,7 +262,7 @@ class PatientController extends Controller
             'enrolled_at'         => $patient->enrolled_at?->toDateString(),
             'current_day'         => min($currentDay, $patient->program?->duration_days ?? $currentDay),
             'total_milestones'    => $totalMilestones,
-            'completed_milestones'=> $completedMilestones,
+            'completed_milestones' => $completedMilestones,
             'completion_percent'  => $completionPercent,
             'adherence_score'     => $adherence,
             'streak'              => $streak,
