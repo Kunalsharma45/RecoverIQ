@@ -1,5 +1,5 @@
 import React from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "motion/react";
 import {
   Flag,
@@ -26,6 +26,8 @@ export default function Milestones() {
   const [selectedMilestone, setSelectedMilestone] = React.useState(null);
   const [showCheckIn, setShowCheckIn] = React.useState(false);
   const [showDetails, setShowDetails] = React.useState(false);
+  const navigate = useNavigate();
+  const openedStartMilestoneIdRef = React.useRef(null);
 
   React.useEffect(() => {
     fetchMilestones();
@@ -48,12 +50,16 @@ export default function Milestones() {
   React.useEffect(() => {
     const startId = location?.state?.startMilestoneId;
     if (!startId) return;
+    if (openedStartMilestoneIdRef.current === startId) return;
+
     // If milestones are already loaded, open immediately, else wait until fetch finishes
     if (milestones && milestones.length > 0) {
       const m = milestones.find((ms) => ms.id === startId);
       if (m) {
+        openedStartMilestoneIdRef.current = startId;
         setSelectedMilestone(m);
         setShowCheckIn(true);
+        navigate(location.pathname, { replace: true, state: {} });
       }
     } else {
       // Poll for a short time until milestones load then open
@@ -61,8 +67,10 @@ export default function Milestones() {
         if (milestones && milestones.length > 0) {
           const m = milestones.find((ms) => ms.id === startId);
           if (m) {
+            openedStartMilestoneIdRef.current = startId;
             setSelectedMilestone(m);
             setShowCheckIn(true);
+            navigate(location.pathname, { replace: true, state: {} });
             clearInterval(handle);
           }
         }
@@ -79,6 +87,8 @@ export default function Milestones() {
   const handleCheckInSubmit = async (formData) => {
     try {
       await patientApi.completeMilestone(selectedMilestone.id, formData);
+      setShowCheckIn(false);
+      setSelectedMilestone(null);
       fetchMilestones();
     } catch (err) {
       console.error(err);
