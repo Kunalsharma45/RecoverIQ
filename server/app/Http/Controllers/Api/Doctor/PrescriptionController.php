@@ -8,6 +8,7 @@ use App\Models\Prescription;
 use App\Models\PrescriptionMedicine;
 use App\Models\Notification as AppNotification;
 use App\Events\AppointmentCompleted;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -49,6 +50,30 @@ class PrescriptionController extends Controller
       $medicines = $request->input('medicines', []);
       foreach ($medicines as $m) {
         PrescriptionMedicine::create(array_merge($m, ['prescription_id' => $prescription->id]));
+      }
+
+      // Create or refresh the next follow-up appointment so the patient dashboard
+      // can show it as the upcoming visit.
+      if ($prescription->next_visit_date && $appointment->patient_id) {
+        $nextSlot = Carbon::parse($prescription->next_visit_date)
+          ->setTimeFrom($appointment->slot_at)
+          ->seconds(0);
+
+        $followUp = Appointment::firstOrNew([
+          'doctor_id' => $appointment->doctor_id,
+          'patient_id' => $appointment->patient_id,
+          'slot_at' => $nextSlot,
+        ]);
+
+        $followUp->fill([
+          'booked_by_name' => $appointment->booked_by_name,
+          'booked_by_email' => $appointment->booked_by_email,
+          'status' => 'confirmed',
+          'notes' => $prescription->notes ? 'Follow-up from prescription: ' . $prescription->notes : 'Follow-up appointment assigned by doctor.',
+          'problem_description' => $appointment->problem_description,
+        ]);
+
+        $followUp->save();
       }
 
       // Optionally mark appointment completed if requested
