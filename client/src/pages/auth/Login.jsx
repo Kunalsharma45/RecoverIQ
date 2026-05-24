@@ -23,6 +23,7 @@ export default function Login() {
   const navigate = useNavigate();
   const { login } = useAuth();
 
+
   const form = useForm({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -54,6 +55,7 @@ export default function Login() {
 
   return (
     <div className="min-h-screen bg-[var(--mutedWhite)] flex justify-center items-center font-sans overflow-hidden relative">
+      
       {/* Cinematic Background Layers */}
       <div className="absolute inset-0 bg-gradient-to-br from-[var(--mutedWhite)] via-white to-[var(--cream)] opacity-90 -z-20" />
       <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.04] mix-blend-overlay -z-10 pointer-events-none" />
