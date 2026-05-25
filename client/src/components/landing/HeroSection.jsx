@@ -1,9 +1,12 @@
 import React from 'react'
 import { motion } from 'motion/react'
 import { CheckCircle2, Stethoscope } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 import HeroSVG from '../../assets/Physical therapy exercise-amico.svg'
 
 export default function HeroSection() {
+  const navigate = useNavigate()
+
   return (
     <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden pt-32 pb-20">
       {/* Decorative Blobs */}
@@ -60,7 +63,7 @@ export default function HeroSection() {
               <motion.button 
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={() => window.location.href = '/book'} 
+                onClick={() => navigate('/book')} 
                 className="px-8 py-4 rounded-full bg-[var(--darkGreen)] text-white font-medium hover:bg-[var(--primaryGreen)] transition-colors shadow-xl shadow-[var(--darkGreen)]/20"
               >
                 Start Your Recovery

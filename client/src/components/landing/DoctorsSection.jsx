@@ -2,9 +2,11 @@ import React from "react";
 import { motion } from "motion/react";
 import { useQuery } from "@tanstack/react-query";
 import { Star, ArrowRight } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import api from "../../lib/api.js";
 
 export default function DoctorsSection() {
+  const navigate = useNavigate();
   const { data: doctors, isLoading } = useQuery({
     queryKey: ["public-doctors"],
     queryFn: async () => {
@@ -110,7 +112,7 @@ export default function DoctorsSection() {
                     Experience
                   </div>
                   <button
-                    onClick={() => (window.location.href = "/book")}
+                    onClick={() => navigate("/book")}
                     className="w-10 h-10 rounded-full bg-[var(--cream)] group-hover:bg-[var(--primaryGreen)] group-hover:text-white flex items-center justify-center transition-colors text-[var(--textDark)] shadow-sm"
                   >
                     <ArrowRight

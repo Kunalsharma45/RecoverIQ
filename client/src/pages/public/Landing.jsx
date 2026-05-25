@@ -1,4 +1,5 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 import Navbar from '../../components/layout/Navbar.jsx'
 import HeroSection from '../../components/landing/HeroSection.jsx'
 import ServicesSection from '../../components/landing/ServicesSection.jsx'
@@ -42,8 +43,8 @@ export default function Landing() {
               <a href="#services" className="hover:text-[var(--primaryGreen)] transition-colors">Services</a>
               <a href="#programs" className="hover:text-[var(--primaryGreen)] transition-colors">Programs</a>
               <a href="#doctors" className="hover:text-[var(--primaryGreen)] transition-colors">Doctors</a>
-              <a href="/login" className="hover:text-[var(--primaryGreen)] transition-colors">Login</a>
-              <a href="/register-doctor" className="hover:text-[var(--primaryGreen)] transition-colors">Join as Doctor</a>
+              <Link to="/login" className="hover:text-[var(--primaryGreen)] transition-colors">Login</Link>
+              <Link to="/register-doctor" className="hover:text-[var(--primaryGreen)] transition-colors">Join as Doctor</Link>
             </div>
           </div>
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-white/30">
