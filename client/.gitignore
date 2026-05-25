@@ -1,0 +1,12 @@
+# Vite cache and output
+.vite/
+node_modules/.vite/
+dist/
+dist-ssr/
+
+# Dependencies
+node_modules/
+
+# Local environment files
+.env.local
+*.local
