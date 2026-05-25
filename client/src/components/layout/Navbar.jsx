@@ -3,19 +3,31 @@ import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { motion } from 'motion/react'
 
 const NavLink = ({ to, hash, label, isActive }) => {
+  const navigate = useNavigate()
+
   const handleClick = (e) => {
+    // normalize `to` to a string for fallback behavior
+    const toStr = typeof to === 'string' ? to : `${to.pathname || ''}${to.hash || ''}`
+
     if (hash) {
-      const element = document.getElementById(hash.substring(1))
-      if (element) {
-        e.preventDefault()
-        element.scrollIntoView({ behavior: 'smooth' })
-        window.history.pushState(null, '', to)
-      }
-    } else if (to === '/') {
+      // use router navigation so `location` updates and the parent sees the new hash
+      e.preventDefault()
+      navigate(to)
+      // scroll after navigation completes — use a small timeout to allow DOM updates
+      setTimeout(() => {
+        const element = document.getElementById(hash.substring(1))
+        if (element) element.scrollIntoView({ behavior: 'smooth' })
+      }, 50)
+      return
+    }
+
+    if (toStr === '/') {
       if (window.location.pathname === '/') {
         e.preventDefault()
         window.scrollTo({ top: 0, behavior: 'smooth' })
-        window.history.pushState(null, '', '/')
+        // ensure router location is set to root
+        navigate('/')
+        return
       }
     }
   }
@@ -38,12 +50,68 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const navigate = useNavigate()
   const location = useLocation()
+  const [activeHash, setActiveHash] = useState(location.hash || '')
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20)
     onScroll()
     window.addEventListener('scroll', onScroll)
     return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
+  // scroll-spy: update activeHash as the user scrolls through sections
+  useEffect(() => {
+    // keep activeHash in sync when location.hash changes (e.g., via clicks)
+    setActiveHash(location.hash || '')
+  }, [location.hash])
+
+  useEffect(() => {
+    let rafId = null
+
+    const sectionIds = ['services', 'programs', 'doctors', 'testimonials']
+
+    const updateActiveOnScroll = () => {
+      // find sections that exist on the page
+      const sections = sectionIds.map(id => {
+        const el = document.getElementById(id)
+        if (!el) return null
+        const rect = el.getBoundingClientRect()
+        // distance from viewport center
+        const dist = Math.abs((rect.top + rect.bottom) / 2 - window.innerHeight / 2)
+        return { id: `#${id}`, dist, top: rect.top }
+      }).filter(Boolean)
+
+      if (sections.length === 0) {
+        // if no sections found, consider Home active when near top
+        setActiveHash(window.scrollY < 120 ? '' : activeHash)
+        return
+      }
+
+      // pick the section whose center is closest to viewport center
+      sections.sort((a, b) => a.dist - b.dist)
+      const nearest = sections[0]
+
+      // if nearest section is above the fold but we are very close to top, set Home
+      if (window.scrollY < 120) {
+        setActiveHash('')
+      } else {
+        setActiveHash(nearest.id)
+      }
+    }
+
+    const onScroll = () => {
+      if (rafId) cancelAnimationFrame(rafId)
+      rafId = requestAnimationFrame(updateActiveOnScroll)
+    }
+
+    updateActiveOnScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onScroll)
+    return () => {
+      if (rafId) cancelAnimationFrame(rafId)
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', onScroll)
+    }
   }, [])
 
   return (
@@ -69,8 +137,10 @@ export default function Navbar() {
         <nav className="hidden lg:flex items-center gap-1 p-1.5 bg-white/30 rounded-full shadow-inner border border-white/50">
           {['Home', 'Services', 'Programs', 'Doctors', 'Testimonials'].map((item) => {
             const hash = item === 'Home' ? '' : `#${item.toLowerCase()}`
-            const isActive = location.hash === hash || (item === 'Home' && !location.hash)
-            return <NavLink key={item} to={`/${hash}`} hash={hash} label={item} isActive={isActive} />
+            // build a proper `to` object when using hashes so react-router sets location.hash
+            const to = hash ? { pathname: '/', hash } : '/'
+            const isActive = activeHash === hash || (item === 'Home' && activeHash === '')
+            return <NavLink key={item} to={to} hash={hash} label={item} isActive={isActive} />
           })}
         </nav>
 
