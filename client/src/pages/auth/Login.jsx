@@ -231,6 +231,14 @@ export default function Login() {
                     placeholder="Password"
                     {...form.register("password")}
                   />
+                  <div className="mt-3 flex justify-end">
+                    <Link
+                      to="/forgot-password"
+                      className="text-sm font-medium text-[var(--primaryGreen)] hover:text-[var(--darkGreen)] transition-colors decoration-2 underline-offset-4 hover:underline"
+                    >
+                      Forgot password?
+                    </Link>
+                  </div>
                   {form.formState.errors.password && (
                     <span className="text-red-500 text-sm mt-2 block pl-4">
                       {form.formState.errors.password.message}

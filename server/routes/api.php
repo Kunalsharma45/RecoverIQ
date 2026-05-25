@@ -52,7 +52,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Auth — shared
     Route::post('/auth/logout', [AuthController::class, 'logout']);
-    Route::post('/auth/reset-password', [AuthController::class, 'resetPassword']);
+    Route::post('/auth/change-password', [AuthController::class, 'resetPassword']);
 
     /*
     | Admin routes
