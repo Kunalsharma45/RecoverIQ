@@ -1,35 +1,37 @@
-import React from 'react'
-import { Routes, Route, Navigate } from 'react-router-dom'
-import Landing from '../pages/public/Landing.jsx'
-import Login from '../pages/auth/Login.jsx'
-import RegisterDoctor from '../pages/auth/RegisterDoctor.jsx'
-import Book from '../pages/public/Book.jsx'
-import ProtectedRoute from './ProtectedRoute.jsx'
-import PublicLayout from '../layouts/PublicLayout.jsx'
-import DoctorLayout from '../layouts/DoctorLayout.jsx'
-import DoctorDashboard from '../pages/doctor/Dashboard.jsx'
-import DoctorAppointments from '../pages/doctor/Appointments.jsx'
-import DoctorPatients from '../pages/doctor/Patients.jsx'
-import DoctorPrograms from '../pages/doctor/Programs.jsx'
-import DoctorAnalytics from '../pages/doctor/Analytics.jsx'
-import DoctorProfile from '../pages/doctor/Profile.jsx'
-import PatientLayout from '../layouts/PatientLayout.jsx'
-import PatientDashboard from '../pages/patient/Dashboard.jsx'
-import PatientMilestones from '../pages/patient/Milestones.jsx'
-import PatientAppointments from '../pages/patient/Appointments.jsx'
-import PatientSettings from '../pages/patient/Settings.jsx'
+import React from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
+import Landing from "../pages/public/Landing.jsx";
+import Login from "../pages/auth/Login.jsx";
+import ForgotPassword from "../pages/auth/ForgotPassword.jsx";
+import ResetPassword from "../pages/auth/ResetPassword.jsx";
+import RegisterDoctor from "../pages/auth/RegisterDoctor.jsx";
+import Book from "../pages/public/Book.jsx";
+import ProtectedRoute from "./ProtectedRoute.jsx";
+import PublicLayout from "../layouts/PublicLayout.jsx";
+import DoctorLayout from "../layouts/DoctorLayout.jsx";
+import DoctorDashboard from "../pages/doctor/Dashboard.jsx";
+import DoctorAppointments from "../pages/doctor/Appointments.jsx";
+import DoctorPatients from "../pages/doctor/Patients.jsx";
+import DoctorPrograms from "../pages/doctor/Programs.jsx";
+import DoctorAnalytics from "../pages/doctor/Analytics.jsx";
+import DoctorProfile from "../pages/doctor/Profile.jsx";
+import PatientLayout from "../layouts/PatientLayout.jsx";
+import PatientDashboard from "../pages/patient/Dashboard.jsx";
+import PatientMilestones from "../pages/patient/Milestones.jsx";
+import PatientAppointments from "../pages/patient/Appointments.jsx";
+import PatientSettings from "../pages/patient/Settings.jsx";
 
-import PatientRecoveryProgram from '../pages/patient/RecoveryProgram.jsx'
-import PatientTimeline from '../pages/patient/Timeline.jsx'
+import PatientRecoveryProgram from "../pages/patient/RecoveryProgram.jsx";
+import PatientTimeline from "../pages/patient/Timeline.jsx";
 
 const Placeholder = ({ title }) => (
   <div className="pt-36">
     <div className="max-w-7xl mx-auto px-6 lg:px-8">
       <h1 className="serif-heading text-4xl">{title}</h1>
-      <p className="mt-4 text-[var(--textSoft)]">This area will be built next.</p>
+      <p className="mt-4 text-(--textSoft)">This area will be built next.</p>
     </div>
   </div>
-)
+);
 
 export default function RoutesIndex() {
   return (
@@ -39,11 +41,17 @@ export default function RoutesIndex() {
         <Route path="/book" element={<Book />} />
       </Route>
       <Route path="/login" element={<Login />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/register-doctor" element={<RegisterDoctor />} />
 
       <Route
         path="/doctor"
-        element={<ProtectedRoute roles={["doctor"]}><DoctorLayout /></ProtectedRoute>}
+        element={
+          <ProtectedRoute roles={["doctor"]}>
+            <DoctorLayout />
+          </ProtectedRoute>
+        }
       >
         <Route index element={<DoctorDashboard />} />
         <Route path="appointments" element={<DoctorAppointments />} />
@@ -55,7 +63,11 @@ export default function RoutesIndex() {
 
       <Route
         path="/patient"
-        element={<ProtectedRoute roles={["patient"]}><PatientLayout /></ProtectedRoute>}
+        element={
+          <ProtectedRoute roles={["patient"]}>
+            <PatientLayout />
+          </ProtectedRoute>
+        }
       >
         <Route index element={<PatientDashboard />} />
         <Route path="milestones" element={<PatientMilestones />} />
@@ -66,5 +78,5 @@ export default function RoutesIndex() {
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
-  )
+  );
 }
